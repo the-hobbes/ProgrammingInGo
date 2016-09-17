@@ -18,24 +18,34 @@ import (
     "log"
     "os"
     "path/filepath"
+    "strings"
 )
 
+func printUsage() {
+	fmt.Printf("usage: %s <whole-number>\n-b --bar draw an underbar and an overbar\n", filepath.Base(os.Args[0]))
+	os.Exit(1)
+}
+
 func main() {
+	useStars := false
+	var stringOfDigits string
+
     if len(os.Args) == 1 {
-        fmt.Printf("usage: %s <whole-number>\n", filepath.Base(os.Args[0]))
-        os.Exit(1)
+        printUsage()
+    }
+    if os.Args[1] == "--help" {
+		printUsage()
+    }
+    if os.Args[1] == "-b" || os.Args[1] == "--b" {
+    	useStars = true
+		stringOfDigits = os.Args[2]
+    } else {
+    	stringOfDigits = os.Args[1]
     }
 
-    stringOfDigits := os.Args[1]
-    // we build the output horizontally, like a printer.
     for row := range bigDigits[0] {
         line := ""
         for column := range stringOfDigits {
-            // we index into the position given by column and get the byte value
-            // at that position. Then we subtract that byte value from the value
-            // of the digit '0' to get the number it represents.
-            // In UTF-8/ASCII '0'== 48 decimal, so '3' == 51 and '3'-'0'= 3.
-            // This lets us figure out what the number is without casting.
             digit := stringOfDigits[column] - '0'
             if 0 <= digit && digit <= 9 {
                 line += bigDigits[digit][row] + "  "
@@ -43,7 +53,13 @@ func main() {
                 log.Fatal("invalid whole number")
             }
         }
+        if useStars && row == 0 {
+            fmt.Println(strings.Repeat("*", len(line)-1))
+        }
         fmt.Println(line)
+        if useStars && row+1 == len(bigDigits[0]) {
+            fmt.Println(strings.Repeat("*", len(line)-1))
+        }
     }
 }
 
