@@ -165,11 +165,15 @@ func mode(numbers []float64) float64 {
     }
     frequencyCounts := make(map[string]float64)
     for _, i := range numbers {
-        key := strconv.FormatFloat(i, 'f', 6, 64)
+        key := strconv.FormatFloat(i, 'f', 1, 64)
         frequencyCounts[key]++
     }
     sortedCounts := sortMapByValue(frequencyCounts)
-    return sortedCounts[len(sortedCounts)-1].Value  // this is still returning bad data
+    mode, err := strconv.ParseFloat(sortedCounts[len(sortedCounts)-1].Key, 64)
+    if err != nil {
+        log.Fatal(err)
+    }
+    return mode
 }
 
 // A function to turn a map into a pairList, then sort and return it.
